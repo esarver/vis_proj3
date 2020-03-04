@@ -35,7 +35,7 @@ add_executable(${PROJECT_NAME} ${sources})
 target_link_libraries(${PROJECT_NAME} PRIVATE ${VTK_LIBRARIES})
 
 # This is only valid after VTK 8.90.0
-vtk_module_autoinit(
-    TARGETS ${PROJECT_NAME}
-    MODULES ${VTK_LIBRARIES}
-)
+# vtk_module_autoinit(
+#     TARGETS ${PROJECT_NAME}
+#     MODULES ${VTK_LIBRARIES}
+# )
