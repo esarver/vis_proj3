@@ -1,4 +1,6 @@
 import vtk
+from typing import Tuple
+
 
 def get_program_parameters() -> str:
     import argparse
@@ -9,25 +11,50 @@ def get_program_parameters() -> str:
      represents the skin and displays it.
     '''
     parser = argparse.ArgumentParser(description=description, epilog=epilogue,
-                                    formatter_class=argparse.RawDescriptionHelpFormatter)
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('filename', help='FullHead.mhd')
     args = parser.parse_args()
     return args.filename
 
+
+def configure_render() -> Tuple[vtk.vtkRenderer, vtk.vtkRenderWindow, vtk.vtkRenderWindowInteractor]:
+    ren = vtk.vtkRenderer()
+    renWin = vtk.vtkRenderWindow()
+    renWin.AddRenderer(ren)
+
+    iren = vtk.vtkRenderWindowInteractor()
+    iren.SetRenderWindow(renWin)
+
+    return (ren, renWin, iren)
+
+
 def main():
-    ## Define grid
-    #TODO: Uniform grid 26x26x26, xyzv ranges [0.0,1.0]...
+    (ren, renWin, iren) = configure_render()
+    colors = vtk.vtkNamedColors()
+    # Define grid
+    # Generate Scalar field
 
-    ## Generate Scalar field
+    # TODO Design Color table
+    # Put the values in the grid
 
-    ## Design Color table
+    # 4 Displays
+    # TODO: IsoSurface
+    # TODO: Cutting Planes
+    # TODO: Contour Lines
+    # TODO: Document techniques
 
-    ## 4 Displays
-    #TODO: IsoSurface
-    #TODO: Cutting Planes
-    #TODO: Contour Lines
-    #TODO: Document techniques
-    pass
+    # Setup the renderer
+
+    # render the stuff
+
+    ren.SetBackground(colors.GetColor3d('Navy'))
+    renWin.SetSize(300, 300)
+
+    # interact with data
+    iren.Initialize()
+    renWin.Render()
+    iren.Start()
+
 
 if __name__ == '__main__':
     main()
