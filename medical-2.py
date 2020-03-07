@@ -9,7 +9,7 @@ import vtk
 def main():
     colors = vtk.vtkNamedColors()
 
-    fileName = get_program_parameters()
+    filename = get_program_parameters()
 
     colors.SetColor("SkinColor", [255, 125, 64, 255])
     colors.SetColor("BkgColor", [51, 77, 102, 255])
@@ -18,12 +18,12 @@ def main():
     # draws into the render window, the interactor enables mouse- and
     # keyboard-based interaction with the data within the render window.
     #
-    aRenderer = vtk.vtkRenderer()
-    renWin = vtk.vtkRenderWindow()
-    renWin.AddRenderer(aRenderer)
+    renderer = vtk.vtkRenderer()
+    render_window = vtk.vtkRenderWindow()
+    render_window.AddRenderer(renderer)
 
-    iren = vtk.vtkRenderWindowInteractor()
-    iren.SetRenderWindow(renWin)
+    render_interactor = vtk.vtkRenderWindowInteractor()
+    render_interactor.SetRenderWindow(render_window)
 
     # The following reader is used to read a series of 2D slices (images)
     # that compose the volume. The slice dimensions are set, and the
@@ -32,25 +32,25 @@ def main():
     # filenames using the format FilePrefix.%d. (In this case the FilePrefix
     # is the root name of the file: quarter.)
     reader = vtk.vtkMetaImageReader()
-    reader.SetFileName(fileName)
+    reader.SetFileName(filename)
 
     # An isosurface, or contour value of 500 is known to correspond to the
     # skin of the patient.
     # The triangle stripper is used to create triangle strips from the
     # isosurface these render much faster on many systems.
-    skinExtractor = vtk.vtkMarchingCubes()
-    skinExtractor.SetInputConnection(reader.GetOutputPort())
-    skinExtractor.SetValue(0, 500)
+    skin_extractor = vtk.vtkMarchingCubes()
+    skin_extractor.SetInputConnection(reader.GetOutputPort())
+    skin_extractor.SetValue(0, 500)
 
-    skinStripper = vtk.vtkStripper()
-    skinStripper.SetInputConnection(skinExtractor.GetOutputPort())
+    skin_stripper = vtk.vtkStripper()
+    skin_stripper.SetInputConnection(skin_extractor.GetOutputPort())
 
-    skinMapper = vtk.vtkPolyDataMapper()
-    skinMapper.SetInputConnection(skinStripper.GetOutputPort())
-    skinMapper.ScalarVisibilityOff()
+    skin_mapper = vtk.vtkPolyDataMapper()
+    skin_mapper.SetInputConnection(skin_stripper.GetOutputPort())
+    skin_mapper.ScalarVisibilityOff()
 
     skin = vtk.vtkActor()
-    skin.SetMapper(skinMapper)
+    skin.SetMapper(skin_mapper)
     skin.GetProperty().SetDiffuseColor(colors.GetColor3d("SkinColor"))
     skin.GetProperty().SetSpecular(.3)
     skin.GetProperty().SetSpecularPower(20)
@@ -60,59 +60,59 @@ def main():
     # bone of the patient.
     # The triangle stripper is used to create triangle strips from the
     # isosurface these render much faster on may systems.
-    boneExtractor = vtk.vtkMarchingCubes()
-    boneExtractor.SetInputConnection(reader.GetOutputPort())
-    boneExtractor.SetValue(0, 1150)
+    bone_extractor = vtk.vtkMarchingCubes()
+    bone_extractor.SetInputConnection(reader.GetOutputPort())
+    bone_extractor.SetValue(0, 1150)
 
-    boneStripper = vtk.vtkStripper()
-    boneStripper.SetInputConnection(boneExtractor.GetOutputPort())
+    bone_stripper = vtk.vtkStripper()
+    bone_stripper.SetInputConnection(bone_extractor.GetOutputPort())
 
-    boneMapper = vtk.vtkPolyDataMapper()
-    boneMapper.SetInputConnection(boneStripper.GetOutputPort())
-    boneMapper.ScalarVisibilityOff()
+    bone_mapper = vtk.vtkPolyDataMapper()
+    bone_mapper.SetInputConnection(bone_stripper.GetOutputPort())
+    bone_mapper.ScalarVisibilityOff()
 
     bone = vtk.vtkActor()
-    bone.SetMapper(boneMapper)
+    bone.SetMapper(bone_mapper)
     bone.GetProperty().SetDiffuseColor(colors.GetColor3d("Ivory"))
 
     # An outline provides context around the data.
     #
-    outlineData = vtk.vtkOutlineFilter()
-    outlineData.SetInputConnection(reader.GetOutputPort())
+    outline_data = vtk.vtkOutlineFilter()
+    outline_data.SetInputConnection(reader.GetOutputPort())
 
-    mapOutline = vtk.vtkPolyDataMapper()
-    mapOutline.SetInputConnection(outlineData.GetOutputPort())
+    map_outline = vtk.vtkPolyDataMapper()
+    map_outline.SetInputConnection(outline_data.GetOutputPort())
 
     outline = vtk.vtkActor()
-    outline.SetMapper(mapOutline)
+    outline.SetMapper(map_outline)
     outline.GetProperty().SetColor(colors.GetColor3d("Black"))
 
     # It is convenient to create an initial view of the data. The FocalPoint
     # and Position form a vector direction. Later on (ResetCamera() method)
     # this vector is used to position the camera to look at the data in
     # this direction.
-    aCamera = vtk.vtkCamera()
-    aCamera.SetViewUp(0, 0, -1)
-    aCamera.SetPosition(0, -1, 0)
-    aCamera.SetFocalPoint(0, 0, 0)
-    aCamera.ComputeViewPlaneNormal()
-    aCamera.Azimuth(30.0)
-    aCamera.Elevation(30.0)
+    camera = vtk.vtkCamera()
+    camera.SetViewUp(0, 0, -1)
+    camera.SetPosition(0, -1, 0)
+    camera.SetFocalPoint(0, 0, 0)
+    camera.ComputeViewPlaneNormal()
+    camera.Azimuth(30.0)
+    camera.Elevation(30.0)
 
     # Actors are added to the renderer. An initial camera view is created.
     # The Dolly() method moves the camera towards the FocalPoint,
     # thereby enlarging the image.
-    aRenderer.AddActor(outline)
-    aRenderer.AddActor(skin)
-    aRenderer.AddActor(bone)
-    aRenderer.SetActiveCamera(aCamera)
-    aRenderer.ResetCamera()
-    aCamera.Dolly(1.5)
+    renderer.AddActor(outline)
+    renderer.AddActor(skin)
+    renderer.AddActor(bone)
+    renderer.SetActiveCamera(camera)
+    renderer.ResetCamera()
+    camera.Dolly(1.5)
 
     # Set a background color for the renderer and set the size of the
     # render window (expressed in pixels).
-    aRenderer.SetBackground(colors.GetColor3d("BkgColor"))
-    renWin.SetSize(640, 480)
+    renderer.SetBackground(colors.GetColor3d("BkgColor"))
+    render_window.SetSize(640, 480)
 
     # Note that when camera movement occurs (as it does in the Dolly()
     # method), the clipping planes often need adjusting. Clipping planes
@@ -120,11 +120,11 @@ def main():
     # near plane clips out objects in front of the plane the far plane
     # clips out objects behind the plane. This way only what is drawn
     # between the planes is actually rendered.
-    aRenderer.ResetCameraClippingRange()
+    renderer.ResetCameraClippingRange()
 
     # Initialize the event loop and then start it.
-    iren.Initialize()
-    iren.Start()
+    render_interactor.Initialize()
+    render_interactor.Start()
 
 
 def get_program_parameters():
