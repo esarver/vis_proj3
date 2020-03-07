@@ -12,3 +12,7 @@ _deps
 
 build
 .clangd
+
+.directory
+.idea
+
