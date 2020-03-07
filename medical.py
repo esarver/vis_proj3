@@ -1,5 +1,6 @@
 import vtk
-from typing import Tuple
+from typing import Tuple, List
+from numpy import arange
 
 
 def get_program_parameters() -> str:
@@ -19,18 +20,24 @@ def get_program_parameters() -> str:
 
 def configure_render() -> Tuple[vtk.vtkRenderer, vtk.vtkRenderWindow, vtk.vtkRenderWindowInteractor]:
     ren = vtk.vtkRenderer()
-    renWin = vtk.vtkRenderWindow()
-    renWin.AddRenderer(ren)
+    ren_win = vtk.vtkRenderWindow()
+    ren_win.AddRenderer(ren)
 
     iren = vtk.vtkRenderWindowInteractor()
-    iren.SetRenderWindow(renWin)
+    iren.SetRenderWindow(ren_win)
 
-    return (ren, renWin, iren)
+    return ren, ren_win, iren
 
+def generate_data() -> Tuple[List[float], List[float], List[float]]:
+
+    pass
 
 def main():
-    (ren, renWin, iren) = configure_render()
+    (ren, ren_win, iren) = configure_render()
     colors = vtk.vtkNamedColors()
+
+
+
     # Define grid
     # Generate Scalar field
 
@@ -48,11 +55,11 @@ def main():
     # render the stuff
 
     ren.SetBackground(colors.GetColor3d('Navy'))
-    renWin.SetSize(300, 300)
+    ren_win.SetSize(300, 300)
 
     # interact with data
     iren.Initialize()
-    renWin.Render()
+    ren_win.Render()
     iren.Start()
 
 
