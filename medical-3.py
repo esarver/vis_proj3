@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 """
+Medical Demo 3 from https://lorensen.github.io/VTKExamples/site/Python/Medical/MedicalDemo3/
 """
 
 import vtk
