@@ -71,7 +71,6 @@ def create_isosurface(func: vtk.vtkSampleFunction,
     contour_mapper.SetInputConnection(contour.GetOutputPort())
     contour_mapper.SetScalarRange(0, 7)
     contour_mapper.SetLookupTable(lut)
-    contour_mapper.SetScalarModeToUseCellData()
 
     actor.SetMapper(contour_mapper)
 
@@ -191,9 +190,9 @@ def create_color_table(num_values: int) -> vtk.vtkLookupTable:
     ctf = vtk.vtkColorTransferFunction()
     ctf.SetColorSpaceToDiverging()
 
-    ctf.AddRGBPoint(0.0, 0.085, 0.532, 0.201)
-    ctf.AddRGBPoint(0.5, 0.865, 0.865, 0.865)
-    ctf.AddRGBPoint(1.0, 0.677, 0.492, 0.093)
+    ctf.AddRGBPoint(0.0, 0, 117, 173)
+    ctf.AddRGBPoint(0.5, 173, 0, 32)
+    ctf.AddRGBPoint(1.0, 173, 142, 0)
 
     lut = vtk.vtkLookupTable()
     lut.SetNumberOfTableValues(num_values)
@@ -220,6 +219,7 @@ def make_cell_data(num_values: int, lut: vtk.vtkLookupTable,
         lut.GetColor(float(i) / (num_values - 1), rgb)
         ucrgb = list(map(int, [x * 255 for x in rgb]))
         colors.InsertNextTuple3(ucrgb[0], ucrgb[1], ucrgb[2])
+
 
 def create_viewport(x_min: float, x_max: float, y_min: float, y_max: float,
                     background_color: vtk.vtkColor3d, actors: List[vtk.vtkActor],
@@ -279,7 +279,21 @@ def main():
     render_window.SetSize(1700, 900)
 
     # Text in the first viewport
-    text = '''The techniques and parameters that I used to create the visualization.'''
+    text = '''Edwin Sarver
+Assignment #3
+Visualization
+    
+    The following visualizations were created using VTK for Python.
+    A quadric is generated with multiple layers. This is then sampled in a 
+    50x50x50-cell cube. Then, the following visualizations are created:
+    
+        1) Isosurfaces
+        2) Cutting Planes
+        3) Contour Lines 
+    
+    A custom color-table was used to get the coloring at each isosurface value.
+    An interactor was added because it is fun to watch the objects (and text) spin.
+    '''
     text_color = vtk.vtkNamedColors().GetColor3d('White')
     text_actor = create_text(text, text_color)
     background_color = vtk.vtkNamedColors().GetColor3d('SlateGray')
@@ -298,9 +312,9 @@ def main():
     color_data = vtk.vtkUnsignedCharArray()
     color_data.SetName('colors')
     color_data.SetNumberOfComponents(3)
-    # make_cell_data(table_size, lut, color_data);
+    make_cell_data(table_size, lut, color_data);
 
-    # sample.GetOutput().GetCellData().SetScalars(color_data)
+    sample.GetOutput().GetCellData().SetScalars(color_data)
 
     # Get the isosurface actors
     iso_actor = create_isosurface(sample, lut)
