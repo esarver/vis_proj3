@@ -1,4 +1,4 @@
-# Visualization: Assignment #3 #
+# [Visualization: Assignment #3](https://github.com/esarver/vis_proj3/) #
 *Edwin Sarver*
 
 ![Running Application](Screenshot_20200310_100422.png "Running Application")
